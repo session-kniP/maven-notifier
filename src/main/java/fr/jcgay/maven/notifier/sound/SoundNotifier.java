@@ -80,4 +80,9 @@ public class SoundNotifier extends AbstractNotifier {
         String sound = status == Status.SUCCESS ? "/109662__grunz__success.wav" : "/Sad_Trombone-Joe_Lamb-665429450.wav";
         return new BufferedInputStream(getClass().getResourceAsStream(sound));
     }
+
+    @Override
+    public String getNotifierId() {
+        return "sound";
+    }
 }

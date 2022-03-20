@@ -8,6 +8,7 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Component(role = EventSpy.class, hint = "notification", description = "Send notification to indicate build status.")
@@ -66,18 +67,28 @@ public class NotificationEventSpyChooser extends AbstractEventSpy {
         return event instanceof MavenExecutionResult;
     }
 
-    private void chooseNotifier(Configuration configuration) {
-        for (Notifier notifier : availableNotifiers) {
-            if (notifier.isCandidateFor(configuration.getImplementation())) {
-                activeNotifier = notifier;
-                logger.debug("Will notify build success/failure with: " + activeNotifier);
-                return;
-            }
-        }
+    protected void chooseNotifier(Configuration configuration) {
+        logger.debug("Choosing notifier...");
+
+        String implementation =
+            configuration.hasImplementation() ?
+                configuration.getImplementation() :
+                configuration.getDefaultImplementation();
+
+        activeNotifier = findNotifier(availableNotifiers, implementation);
 
         if (activeNotifier == null) {
+            logger.debug("Using default notifier");
             activeNotifier = UselessNotifier.EMPTY;
         }
+    }
+
+    @Nullable
+    protected Notifier findNotifier(List<Notifier> notifiers, String implementation) {
+        return notifiers.stream()
+            .filter(notifier -> notifier.isCandidateFor(implementation))
+            .findFirst()
+            .orElse(null);
     }
 
     @VisibleForTesting

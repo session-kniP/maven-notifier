@@ -24,6 +24,11 @@ class AbstractNotifierTest {
             protected void fireNotification(MavenExecutionResult event) {
 
             }
+
+            @Override
+            String getNotifierId() {
+                return "";
+            }
         }
         stopwatch = Stopwatch.createUnstarted(new KnownElapsedTimeTicker(SECONDS.toNanos(2L)))
         eventSpy.stopwatch = stopwatch

@@ -10,6 +10,8 @@ import org.mockito.MockitoAnnotations
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import javax.annotation.Nullable
+
 import static fr.jcgay.maven.notifier.NotificationEventSpyChooser.SKIP_NOTIFICATION
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.entry
@@ -23,6 +25,8 @@ class NotificationEventSpyChooserTest {
 
     @InjectMocks
     private NotificationEventSpyChooser chooser
+    @InjectMocks
+    private NotificationEventSpyChooser emptyChooser
 
     @Mock
     private Notifier notifier
@@ -34,16 +38,21 @@ class NotificationEventSpyChooserTest {
     private Logger logger
 
     private Configuration configuration
+    private Configuration emptyConfiguration
 
     @BeforeMethod
     void setUp() throws Exception {
         def configurationParser = mock(ConfigurationParser.class)
-        configuration = new Configuration()
-        configuration.setImplementation("anything")
-        when configurationParser.get() thenReturn this.configuration
+        def emptyConfigurationParser = mock(ConfigurationParser.class)
 
-        chooser = new NotificationEventSpyChooser()
-        chooser.setConfigurationParser(configurationParser)
+        configuration = createConfigurationWithImplementation()
+        emptyConfiguration = createConfigurationWithoutImplementation()
+
+        when configurationParser.get() thenReturn this.configuration
+        when emptyConfigurationParser.get() thenReturn this.emptyConfiguration
+
+        chooser = createChooser(configurationParser, notifier)
+        emptyChooser = createChooser(emptyConfigurationParser, null)
         MockitoAnnotations.initMocks(this)
 
         System.setProperty(SKIP_NOTIFICATION, String.valueOf(false))
@@ -52,6 +61,24 @@ class NotificationEventSpyChooserTest {
 
         when notifier.isCandidateFor("anything") thenReturn true
         chooser.availableNotifiers = [notifier]
+    }
+
+    Configuration createConfigurationWithImplementation() {
+        Configuration configuration = createConfigurationWithoutImplementation()
+        configuration.setImplementation("anything")
+        return configuration
+    }
+
+    Configuration createConfigurationWithoutImplementation() {
+        return new Configuration()
+    }
+
+    NotificationEventSpyChooser createChooser(ConfigurationParser configurationParser, @Nullable Notifier notifier) {
+        NotificationEventSpyChooser chooser = new NotificationEventSpyChooser()
+        chooser.setConfigurationParser(configurationParser)
+        chooser.availableNotifiers = notifier ? [notifier] : []
+
+        return chooser
     }
 
     @Test
@@ -139,4 +166,11 @@ class NotificationEventSpyChooserTest {
         verify(notifier).init(contextCaptor.capture())
         assertThat(contextCaptor.value.data).contains(entry('notifier.configuration', configuration))
     }
+
+    @Test
+    void 'should use default notifier when implementation is not specified'() {
+        emptyChooser.chooseNotifier(emptyConfiguration)
+        emptyChooser.activeNotifier.isCandidateFor(configuration.defaultImplementation)
+    }
+
 }

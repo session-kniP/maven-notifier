@@ -73,5 +73,10 @@ class AbstractNotifierThresholdTest {
         protected void fireNotification(MavenExecutionResult event) {
             notifier.send()
         }
+
+        @Override
+        String getNotifierId() {
+            return ""
+        }
     }
 }

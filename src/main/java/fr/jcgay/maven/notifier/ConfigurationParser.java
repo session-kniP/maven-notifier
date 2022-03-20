@@ -52,7 +52,7 @@ public class ConfigurationParser {
             .properties();
     }
 
-    private URL globalConfiguration() {
+    public URL globalConfiguration() {
         try {
             URL url = new URL(ConfigurationParser.class.getProtectionDomain().getCodeSource().getLocation(), "maven-notifier.properties");
             logger.debug("Global configuration is located at: " + url);
@@ -62,7 +62,7 @@ public class ConfigurationParser {
         }
     }
 
-    private URL userConfiguration() {
+    public URL userConfiguration() {
         try {
             URL url = new URL("file:///" + System.getProperty("user.home") + "/.m2/maven-notifier.properties");
             logger.debug("User specific configuration is located at: " + url);

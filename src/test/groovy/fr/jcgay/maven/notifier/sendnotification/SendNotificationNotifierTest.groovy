@@ -31,6 +31,7 @@ class SendNotificationNotifierTest {
     private ArgumentCaptor<Notification> notification
 
     private Configuration configuration
+    private Configuration emptyConfiguration
 
     private SendNotificationNotifier underTest
 
@@ -39,6 +40,7 @@ class SendNotificationNotifierTest {
         initMocks this
 
         configuration = new Configuration()
+        emptyConfiguration = new Configuration()
 
         underTest = new SendNotificationNotifier(notifier)
         underTest.logger = mock(Logger)
@@ -106,11 +108,6 @@ class SendNotificationNotifierTest {
         verify(notifier).send(notification.capture())
         assertThat notification.value.title() isEqualTo 'title'
         assertThat notification.value.message() isEqualTo 'Built in: 1 second(s).'
-    }
-
-    @Test
-    void 'should use notifier when implementation is not sound'() {
-        assertThat underTest.isCandidateFor('growl') isTrue()
     }
 
     @Test

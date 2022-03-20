@@ -51,7 +51,7 @@ public abstract class AbstractNotifier implements Notifier {
 
     @Override
     public boolean isCandidateFor(String desiredImplementation) {
-        return getClass().getName().contains(desiredImplementation);
+        return getNotifierId().contains(desiredImplementation);
     }
 
     @Requirement
@@ -82,4 +82,6 @@ public abstract class AbstractNotifier implements Notifier {
     protected boolean isPersistent() {
         return false;
     }
+
+    public abstract String getNotifierId();
 }

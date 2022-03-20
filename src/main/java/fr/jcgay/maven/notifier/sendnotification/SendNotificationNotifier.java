@@ -52,11 +52,6 @@ public class SendNotificationNotifier extends AbstractNotifier {
     }
 
     @Override
-    public boolean isCandidateFor(String desiredImplementation) {
-        return !"sound".equals(desiredImplementation);
-    }
-
-    @Override
     protected void fireNotification(MavenExecutionResult event) {
         Status status = getBuildStatus(event);
         notifier.send(
@@ -73,6 +68,11 @@ public class SendNotificationNotifier extends AbstractNotifier {
     @Override
     protected boolean isPersistent() {
         return notifier.isPersistent();
+    }
+
+    @Override
+    public String getNotifierId() {
+        return "send-notification";
     }
 
     @Override

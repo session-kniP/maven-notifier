@@ -6,6 +6,8 @@ import java.util.Properties;
 
 public class Configuration {
 
+    private final String DEFAULT_IMPLEMENTATION = "send-notification";
+
     private String implementation;
     private boolean shortDescription;
     private int threshold;
@@ -18,6 +20,14 @@ public class Configuration {
 
     public String getImplementation() {
         return implementation;
+    }
+
+    public boolean hasImplementation() {
+        return implementation != null && !implementation.isEmpty();
+    }
+
+    public String getDefaultImplementation() {
+        return DEFAULT_IMPLEMENTATION;
     }
 
     public boolean isShortDescription() {
